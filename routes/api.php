@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
+Route::post('logout', 'UserController@logout');
 Route::get('register/verify/{confirmationCode}', 
 [
     'as' => 'confirmation_path',
@@ -12,6 +13,7 @@ Route::get('register/verify/{confirmationCode}',
 
 Route::group(['middleware' => ['jwt.verify']], function()
 {
-    Route::get('logout', 'UserController@logout');
     Route::get('user', 'UserController@getAuthenticatedUser');
 });
+
+Route::get('key', 'KeyController@keycheck');

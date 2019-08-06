@@ -8,56 +8,115 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function authenticate(Request $request) 
     {
         
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email',  'password');
 
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+                return response()->json(['error' => 'E-Mail ou mot de passe invalide'], 400);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(['error' => 'could_not_create_token, contact administrator'], 500);
         }
         return response()->json(compact('token'));
     }
 
     public function register(Request $request)
     {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:75',
-                'firstname' => 'required|string|max:40',
-                'email' => 'required|string|email|max:191|unique:users',
-                'password' => 'required|string|min:6|confirmed',
-        ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'Nom d\'utilisateur requis', 
+            'field' => 'name'
+        ]); }
+        
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:75', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'Nom d\'utilisateur invalide (max 75 caratères)', 
+            'field' => 'name'
+        ]); }
 
-        if($validator->fails()){
-                return response()->json($validator->errors()->toJson(), 400);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'E-Mail requis', 
+            'field' => 'email'
+        ]); }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:191', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'E-Mail invalide (max 191 caractère, caractère obligatoire : @ et .)', 
+            'field' => 'email'
+        ]); }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:191|unique:users', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'E-Mail déjà existante', 
+            'field' => 'email'
+        ]); }
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'Mot de passe requis', 
+            'field' => 'password'
+        ]); }
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:6', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'Mot de passe invalide (min 6 caractères)', 
+            'field' => 'password'
+        ]); }
+        
+        $validator = Validator::make($request->all(), [
+            'password' => 'confirmed', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'Vous devez confirmer le mot de passe', 
+            'field' => 'password_confirmation'
+        ]); }
+
+        if ($request->has('key')) 
+        {
+            $validator = Validator::make($request->all(), [
+                'key' => 'string|unique:users', 
+            ]); if($validator->fails()){ return response()->json([
+                'error' => 'La clé est déjà utilisé', 
+                'field' => 'key'
+            ]); }
+            $key = $request->get('key');
+            if (DB::table('keys')->where('key',  $key)->doesntExist()) {
+                return response()->json(['error' => 'La clé n\'existe pas']);
+            }
         }
 
-        $confirmation_token = str_random(30);
+        // $confirmation_token = str_random(30);
 
         $user = User::create([
             'name' => $request->get('name'),
-            'firstname' => $request->get('firstname'),
+            'key' => $request->get('key'),
             'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
-            'confirmation_token' => $confirmation_token
+            'password' => Hash::make($request->get('password'))
+            // 'confirmation_token' => $confirmation_token
         ]);
 
-        // Mail::send('email.verify', $confirmation_token, function($message) {
+        // Mail::send('email.verify',  $confirmation_token, function($message) {
         //     $message
         //         ->to(Input::get('email'), Input::get('firstname'))
         //         ->subject('Verify your email address');
         // });
 
         $token = JWTAuth::fromUser($user);
-
-        return response()->json(compact('user','token'),201);
+        return response()->json(compact('user', 'token'),201);
     }
 
     public function confirm(Request $request)
@@ -83,12 +142,17 @@ class UserController extends Controller
         return Redirect::route('login_path');
     }
 
-    public function logout() {
-        JWTAuth::invalidate();
+    public function logout(Request $request) {
+        
+        $header = $request->header('Authorization', '');
+        if (Str::startsWith($header, 'Bearer ')) {
+            $token = Str::substr($header, 7);
+        }
+
+        JWTAuth::setToken($token)->invalidate();
     
         return response()->json([
-            'status' => 'success',
-            'message' => 'logout'
+            'status' => 'success'
         ], 200);
     }
 
