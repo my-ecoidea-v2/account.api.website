@@ -44,3 +44,8 @@ return :
 - ‘token’ required
 return :
 success | ‘user’:’[user_information]’
+
+## Error structure
+[required] The field is empty but is required by the databse
+[invalid] The field is invalid for the database, mayby too long/short, or invalid sytaxe
+[used] The field is already used in database but it can by duplicated
