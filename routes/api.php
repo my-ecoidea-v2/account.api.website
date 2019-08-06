@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
 Route::post('logout', 'UserController@logout');
+Route::put('modify', 'UserController@update');
+Route::delete('delete', 'UserController@delete');
 Route::get('register/verify/{confirmationCode}', 
 [
     'as' => 'confirmation_path',
