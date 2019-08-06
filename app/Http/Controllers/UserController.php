@@ -19,7 +19,7 @@ class UserController extends Controller
 
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'E-Mail ou mot de passe invalide'], 400);
+                return response()->json(['error' => 'invalied_email_or_password'], 400);
             }
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token, contact administrator'], 500);
@@ -32,56 +32,56 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'Nom d\'utilisateur requis', 
+            'error' => 'required_username', 
             'field' => 'name'
         ]); }
         
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:75', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'Nom d\'utilisateur invalide (max 75 caratères)', 
+            'error' => 'invalid_username', 
             'field' => 'name'
         ]); }
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'E-Mail requis', 
+            'error' => 'required_email', 
             'field' => 'email'
         ]); }
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:191', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'E-Mail invalide (max 191 caractère, caractère obligatoire : @ et .)', 
+            'error' => 'invalid_email', 
             'field' => 'email'
         ]); }
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:191|unique:users', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'E-Mail déjà existante', 
+            'error' => 'used_email', 
             'field' => 'email'
         ]); }
 
         $validator = Validator::make($request->all(), [
             'password' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'Mot de passe requis', 
+            'error' => 'required_password', 
             'field' => 'password'
         ]); }
 
         $validator = Validator::make($request->all(), [
             'password' => 'required|string|min:6', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'Mot de passe invalide (min 6 caractères)', 
+            'error' => 'invalid_password', 
             'field' => 'password'
         ]); }
         
         $validator = Validator::make($request->all(), [
             'password' => 'confirmed', 
         ]); if($validator->fails()){ return response()->json([
-            'error' => 'Vous devez confirmer le mot de passe', 
+            'error' => 'required_password_confirmation', 
             'field' => 'password_confirmation'
         ]); }
 
@@ -90,12 +90,12 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'key' => 'string|unique:users', 
             ]); if($validator->fails()){ return response()->json([
-                'error' => 'La clé est déjà utilisé', 
+                'error' => 'used_key', 
                 'field' => 'key'
             ]); }
             $key = $request->get('key');
             if (DB::table('keys')->where('key',  $key)->doesntExist()) {
-                return response()->json(['error' => 'La clé n\'existe pas']);
+                return response()->json(['error' => 'invalid_key']);
             }
         }
 
