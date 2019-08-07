@@ -144,12 +144,47 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
+        $token = $request->header('Authorization');
+        try {
+        } catch (JWTException $e) {
+            return response()->json([
+              'status' => 'error', 
+              'message' => 'Failed to update, please try again.'
+            ], 500);
+        };
+        $user = JWTAuth::parseToken()->authenticate();
 
+        $id = $user['id'];
+        $user = User::where('id', $id)->get()->first();
+
+        $password = $request->get('password');
+        if (password_verify($password,  User::where('id', $id)->value('password')) == false)
+        {
+            return response()->json([
+                'error' => 'bad_password'
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), ['name' => 'required|string']); 
+        if($validator->fails()) { $user->name = $user['name']; }
+        else { $user->name = $request->get('name'); }
+
+        $validator = Validator::make($request->all(), ['email' => 'required|string']); 
+        if($validator->fails()) { $user->email = $user['email']; }
+        else { $user->email = $request->get('email'); }
+
+        $validator = Validator::make($request->all(), ['password' => 'required|string']); 
+        if($validator->fails()) { $user->password = $user['password']; }
+        else { $user->password = Hash::make($request->get('password')); }
+        
+        $user->save();
+
+        return response()->json(compact('user'));
     }
 
     public function delete(Request $request)
     {
-
+        
     }
 
     public function logout(Request $request) {
@@ -170,27 +205,24 @@ class UserController extends Controller
     }
 
     public function getAuthenticatedUser()
-        {
-            try {
-
-                    if (! $user = JWTAuth::parseToken()->authenticate()) {
-                            return response()->json(['user_not_found'], 404);
-                    }
-
-            } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-
-                    return response()->json(['token_expired'], $e->getStatusCode());
-
-            } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-
-                    return response()->json(['token_invalid'], $e->getStatusCode());
-
-            } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-
-                    return response()->json(['token_absent'], $e->getStatusCode());
-
+    {
+        try { 
+            if (! $user = JWTAuth::parseToken()->authenticate()) 
+            {
+                return response()->json(['user_not_found'], 404);
             }
-
-            return response()->json(compact('user'));
         }
+        catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) 
+        {
+            return response()->json(['token_expired'], $e->getStatusCode());
+        } 
+        catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) 
+        {
+            return response()->json(['token_invalid'], $e->getStatusCode());
+        } 
+        catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['token_absent'], $e->getStatusCode());
+        }
+        return response()->json(compact('user'));
+    }
 }

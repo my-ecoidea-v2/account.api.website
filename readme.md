@@ -49,3 +49,7 @@ success | ‘user’:’[user_information]’
 [required] The field is empty but is required by the databse
 [invalid] The field is invalid for the database, mayby too long/short, or invalid sytaxe
 [used] The field is already used in database but it can by duplicated
+[bad] The field don't match with the database value
+
+## Task
+> Delete user
