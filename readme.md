@@ -40,8 +40,8 @@ return :
 ## Récupération d'informations sur un utilisateur
 > request type : json
 > method : get
-> fields :
-- 'token' required
+> authorisation :
+- Bearer token
 return :
 - success | 'user':'[user_information]'
 
@@ -49,6 +49,8 @@ return :
 ## Modification des informations du profil utilisateur
 > request type : json
 > method : put
+> authorisation :
+- Bearer token
 > fields :
 - 'password' required
 - 'new_name'
@@ -61,6 +63,8 @@ return :
 ## Suppression de son profil
 > request type : json
 > method : delete
+> authorisation :
+- Bearer token
 > fields : 
 - 'password' required
 return :
