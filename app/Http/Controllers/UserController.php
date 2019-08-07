@@ -24,7 +24,9 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token, contact administrator'], 500);
         }
-        return response()->json(compact('token'));
+    
+        $user = User::where('email', $request->get('email'))->get()->first();
+        return response()->json(compact('token', 'user'));
     }
 
     public function register(Request $request)
