@@ -19,7 +19,7 @@ class UserController extends Controller
 
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalied_email_or_password'], 400);
+                return response()->json(['error' => 'invalid_email_or_password'], 400);
             }
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token, contact administrator'], 500);
@@ -34,6 +34,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_username', 
             'field' => 'name'
         ]); }
@@ -41,6 +42,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:75', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'invalid_username', 
             'field' => 'name'
         ]); }
@@ -48,6 +50,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_email', 
             'field' => 'email'
         ]); }
@@ -55,6 +58,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:191', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'invalid_email', 
             'field' => 'email'
         ]); }
@@ -62,6 +66,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:191|unique:users', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'used_email', 
             'field' => 'email'
         ]); }
@@ -69,6 +74,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_password', 
             'field' => 'password'
         ]); }
@@ -76,6 +82,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|string|min:6', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'invalid_password', 
             'field' => 'password'
         ]); }
@@ -83,6 +90,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'confirmed', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_password_confirmation', 
             'field' => 'password_confirmation'
         ]); }
@@ -92,6 +100,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'key' => 'string|unique:users', 
             ]); if($validator->fails()){ return response()->json([
+                'status' => 'error', 
                 'error' => 'used_key', 
                 'field' => 'key'
             ]); }
@@ -163,6 +172,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_password', 
             'field' => 'password'
         ]); }
@@ -170,6 +180,7 @@ class UserController extends Controller
         if (password_verify($password,  User::where('id', $id)->value('password')) == false)
         {
             return response()->json([
+                'status' => 'error', 
                 'error' => 'bad_password'
             ]);
         }
@@ -198,7 +209,7 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return response()->json([
               'status' => 'error', 
-              'message' => 'Failed to update, please try again.'
+              'message' => 'Failed to delete, please try again.'
             ], 500);
         };
         $user = JWTAuth::parseToken()->authenticate();
@@ -210,6 +221,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|string', 
         ]); if($validator->fails()){ return response()->json([
+            'status' => 'error', 
             'error' => 'required_password', 
             'field' => 'password'
         ]); }
@@ -217,12 +229,13 @@ class UserController extends Controller
         if (password_verify($password,  User::where('id', $id)->value('password')) == false)
         {
             return response()->json([
+                'status' => 'error', 
                 'error' => 'bad_password'
             ]);
         }
 
         $user->delete();
-        return response()->json(['success' => 'deleted']); 
+        return response()->json(['status' => 'success']); 
     }
 
     public function logout(Request $request) {
