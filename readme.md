@@ -24,7 +24,7 @@ return :
 - 'email' required | max:191
 - 'password' required | min :6
 return :
-- success | 'token':'[user_token]'
+- success | 'token':'[user_token]', 'user' :'[user_informations]'
 - error | 'error :'[error_description]
 
 [api/logout]
