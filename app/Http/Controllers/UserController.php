@@ -157,6 +157,13 @@ class UserController extends Controller
         $id = $user['id'];
         $user = User::where('id', $id)->get()->first();
 
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'required_password', 
+            'field' => 'password'
+        ]); }
         $password = $request->get('password');
         if (password_verify($password,  User::where('id', $id)->value('password')) == false)
         {
@@ -197,6 +204,13 @@ class UserController extends Controller
         $id = $user['id'];
         $user = User::where('id', $id)->get()->first();
 
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string', 
+        ]); if($validator->fails()){ return response()->json([
+            'error' => 'required_password', 
+            'field' => 'password'
+        ]); }
         $password = $request->get('password');
         if (password_verify($password,  User::where('id', $id)->value('password')) == false)
         {
