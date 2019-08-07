@@ -13,8 +13,9 @@
 - 'password' required | min :6
 - 'password_confirmation' required |
 return :
-- success | 'token':'[user_token]', 'user' :'[user_informations]'
-- error | 'error :'[error_description]
+- 'status':'success/error'
+- 'token':'[user_token]', 'user' :'[user_informations]'
+- 'error :'[error_description]
 
 [api/login]
 ## Connexion d'un utilisateur
@@ -24,8 +25,9 @@ return :
 - 'email' required | max:191
 - 'password' required | min :6
 return :
-- success | 'token':'[user_token]', 'user' :'[user_informations]'
-- error | 'error :'[error_description]
+- 'status':'success/error'
+- 'token':'[user_token]', 'user' :'[user_informations]'
+- 'error :'[error_description]
 
 [api/logout]
 ## Déconnexion d'un utilisateur
@@ -34,7 +36,8 @@ return :
 > fields :
 - 'token' required
 return :
-- success | 'status':'success'
+- 'status':'success/error'
+
 
 [api/user]
 ## Récupération d'informations sur un utilisateur
@@ -43,7 +46,8 @@ return :
 > authorisation :
 - Bearer token
 return :
-- success | 'user':'[user_information]'
+- 'status':'success/error'
+- 'user':'[user_information]'
 
 [api/modify]
 ## Modification des informations du profil utilisateur
@@ -57,7 +61,8 @@ return :
 - 'new_email'
 - 'new_password'
 return :
-- sucess | 'user':'[user_information]
+- 'status':'success/error'
+- 'user':'[user_information]
 
 [api/delete]
 ## Suppression de son profil
@@ -68,7 +73,7 @@ return :
 > fields : 
 - 'password' required
 return :
-- sucess | 'sucess':'delete'
+- 'status':'success/error'
 
 ## Error structure
 [required] The field is empty but is required by the databse
