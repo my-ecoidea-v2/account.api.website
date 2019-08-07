@@ -184,7 +184,29 @@ class UserController extends Controller
 
     public function delete(Request $request)
     {
-        
+        $token = $request->header('Authorization');
+        try {
+        } catch (JWTException $e) {
+            return response()->json([
+              'status' => 'error', 
+              'message' => 'Failed to update, please try again.'
+            ], 500);
+        };
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $id = $user['id'];
+        $user = User::where('id', $id)->get()->first();
+
+        $password = $request->get('password');
+        if (password_verify($password,  User::where('id', $id)->value('password')) == false)
+        {
+            return response()->json([
+                'error' => 'bad_password'
+            ]);
+        }
+
+        $user->delete();
+        return response()->json(['success' => 'deleted']); 
     }
 
     public function logout(Request $request) {
