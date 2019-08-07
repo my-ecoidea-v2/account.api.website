@@ -165,17 +165,17 @@ class UserController extends Controller
             ]);
         }
 
-        $validator = Validator::make($request->all(), ['name' => 'required|string']); 
-        if($validator->fails()) { $user->name = $user['name']; }
+        $validator = Validator::make($request->all(), ['new_name' => 'required|string']); 
+        if($validator->fails()) { $user->name = $user['new_name']; }
         else { $user->name = $request->get('name'); }
 
-        $validator = Validator::make($request->all(), ['email' => 'required|string']); 
-        if($validator->fails()) { $user->email = $user['email']; }
+        $validator = Validator::make($request->all(), ['new_email' => 'required|string']); 
+        if($validator->fails()) { $user->email = $user['new_email']; }
         else { $user->email = $request->get('email'); }
 
-        $validator = Validator::make($request->all(), ['password' => 'required|string']); 
-        if($validator->fails()) { $user->password = $user['password']; }
-        else { $user->password = Hash::make($request->get('password')); }
+        $validator = Validator::make($request->all(), ['new_password' => 'required|string']); 
+        if($validator->fails()) { $user->password = $user['new_password']; }
+        else { $user->password = Hash::make($request->get('new_password')); }
         
         $user->save();
 
