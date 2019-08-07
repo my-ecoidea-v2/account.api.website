@@ -3,47 +3,68 @@
 ===
 
 [api/register]
-## Création d’un utilisateur
+## Création d'un utilisateur
 > request type : json
 > method : post
 > fields :
-- ‘name’ required | max:75
-- ‘key’ //clés bêta
-- ‘email’ required | max:191
-- ‘password’ required | min :6
-- ‘password_confirmation’ required |
+- 'name' required | max:75
+- 'key' //clés bêta
+- 'email' required | max:191
+- 'password' required | min :6
+- 'password_confirmation' required |
 return :
-- success | ‘token’:’[user_token]’, ‘user’ :’[user_informations]’
-- error | ‘error :’[error_description]
+- success | 'token':'[user_token]', 'user' :'[user_informations]'
+- error | 'error :'[error_description]
 
 [api/login]
-## Connexion d’un utilisateur
+## Connexion d'un utilisateur
 > request type : json
 > method : post
 > fields :
-- ‘email’ required | max:191
-- ‘password’ required | min :6
+- 'email' required | max:191
+- 'password' required | min :6
 return :
-- success | ‘token’:’[user_token]’
-- error | ‘error :’[error_description]
+- success | 'token':'[user_token]'
+- error | 'error :'[error_description]
 
 [api/logout]
-## Déconnexion d’un utilisateur
+## Déconnexion d'un utilisateur
 > request type : json
 > method : post
 > fields :
-- ‘token’ required
+- 'token' required
 return :
-- success | ‘status’:’success’
+- success | 'status':'success'
 
 [api/user]
-## Récupération d’informations sur un utilisateur
+## Récupération d'informations sur un utilisateur
 > request type : json
 > method : get
 > fields :
-- ‘token’ required
+- 'token' required
 return :
-success | ‘user’:’[user_information]’
+- success | 'user':'[user_information]'
+
+[api/modify]
+## Modification des informations du profil utilisateur
+> request type : json
+> method : put
+> fields :
+- 'password' required
+- 'new_name'
+- 'new_email'
+- 'new_password'
+return :
+- sucess | 'user':'[user_information]
+
+[api/delete]
+## Suppression de son profil
+> request type : json
+> method : delete
+> fields : 
+- 'password' required
+return :
+- sucess | 'sucess':'delete'
 
 ## Error structure
 [required] The field is empty but is required by the databse
@@ -52,4 +73,5 @@ success | ‘user’:’[user_information]’
 [bad] The field don't match with the database value
 
 ## Task
-> Delete user
+> Mute user
+> Ban user
