@@ -95,6 +95,7 @@ class UserController extends Controller
             'field' => 'password_confirmation'
         ]); }
 
+        $role = 0;
         if ($request->has('key')) 
         {
             $validator = Validator::make($request->all(), [
@@ -107,24 +108,20 @@ class UserController extends Controller
             $key = $request->get('key');
             if (DB::table('keys')->where('key',  $key)->doesntExist()) {
                 return response()->json(['error' => 'invalid_key']);
+            } 
+            else 
+            {
+                $role = 1;
             }
         }
-
-        // $confirmation_token = str_random(30);
 
         $user = User::create([
             'name' => $request->get('name'),
             'key' => $request->get('key'),
+            'role' => $role,
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password'))
-            // 'confirmation_token' => $confirmation_token
         ]);
-
-        // Mail::send('email.verify',  $confirmation_token, function($message) {
-        //     $message
-        //         ->to(Input::get('email'), Input::get('firstname'))
-        //         ->subject('Verify your email address');
-        // });
 
         $token = JWTAuth::fromUser($user);
         return response()->json(compact('user', 'token'),201);
